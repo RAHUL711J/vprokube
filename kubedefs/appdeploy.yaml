@@ -24,6 +24,7 @@ spec:
       initContainers:
         - name: init-mydb #Init container to run so that all the backend services are up before the app starts, this will remove the already existing delay in the app startup.
           image: busybox
+          command: ["sh", "-c"]
           args:
             [
               "-c",
@@ -31,6 +32,7 @@ spec:
             ]
         - name: init-memcache
           image: busybox
+          command: ["sh", "-c"]
           args:
             [
               "-c",
@@ -38,8 +40,10 @@ spec:
             ]
         - name: init-rabbitmq
           image: busybox
+          command: ["sh", "-c"]
           args:
             [
               "-c",
               "until nslookup vpromq01.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done;",
             ]
+

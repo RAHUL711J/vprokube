@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprodb
+  labels:
+    app: vprodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vprodb #Manage all pods that have the label app: vprodb
+  template:
+    metadata:
+      labels:
+        app: vprodb #Every pod created will have the label app: vprodb
+    spec:
+      containers:
+        - name: vprodb #Each pod will run one container, Container name is vprodb
+          image: vprocontainers/vprofiledb # Fetching the docker image from Dockerhub.
+          volumeMounts:
+            - name: vpro-db-data # Since the path needs to be empty initially, we used an init container to remove lost+found directory
+              mountPath: /var/lib/mysql
+          ports:
+            - name: vprodb-port
+              containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD # Fetching the DB password from the Secret created earlier
+              valueFrom:
+                secretKeyRef:
+                  name: app-Secret
+                  key: db-pass
+      volumes:
+        - name: vpro-db-data # Mounting the Persistent Volume Claim created earlier
+          persistentVolumeClaim:
+            claimName: db-pv-claim
+      initContainers: # Init container to remove lost+found directory from mounted PV
+        - name: busybox
+          image: busybox:latest
+          args: ["rm", "-rf", "/var/lib/mysql/lost+found"]
+          volumeMounts:
+            - name: vpro-db-data
+              mountPath: /var/lib/mysql

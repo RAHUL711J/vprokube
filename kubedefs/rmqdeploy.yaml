@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprormq
+  labels:
+    app: vprormq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vprormq #Manage all pods that have the label app: vprormq
+  template:
+    metadata:
+      labels:
+        app: vprormq #Every pod created will have the label app: vprormq
+    spec:
+      containers:
+        - name: vprormq #Each pod will run one container, Container name is vprormq
+          image: rabbtitmq # Fetching the docker image from Dockerhub.
+          ports:
+            - name: vprormq-port
+              containerPort: 5672
+          env:
+            - name: RABBITMQ_DEFAULT_PASS # Fetching the DB password from the Secret created earlier
+              valueFrom:
+                secretKeyRef:
+                  name: app-Secret
+                  key: rmq-pass
+            - name: RABBITMQ_DEFAULT_USER
+              value: "guest"

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vpromq01 #Fetching the name from application.properties file, as this name should be resolved to an IP addr.
+spec:
+  ports:
+    - targetPort: vprormq-port
+      port: 5672
+      protocol: TCP
+  selector:
+    app: vprormq
+  type: ClusterIP

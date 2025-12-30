@@ -24,7 +24,8 @@ spec:
             - name: RABBITMQ_DEFAULT_PASS # Fetching the DB password from the Secret created earlier
               valueFrom:
                 secretKeyRef:
-                  name: app-Secret
+                  name: app-secret
                   key: rmq-pass
             - name: RABBITMQ_DEFAULT_USER
               value: "guest"
+
